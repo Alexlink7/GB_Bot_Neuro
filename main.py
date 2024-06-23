@@ -66,13 +66,14 @@ async def get_anecdote(message: types.Message):
     # Ответ приходит в неправильном формате JSON, поэтому необходимо его обработать
     response_text = response.text
     # Удаляем лишние символы для преобразования в корректный JSON
-    response_text = response_text.strip().lstrip('[]').rstrip('[]')
+    response_text = response_text.strip().lstrip('[').rstrip(']').replace('\r', '').replace('\n', '')
 
     try:
-        joke_data = response.json()
+        joke_data = eval(response_text)  # Используем eval для преобразования строки в словарь
         anecdote = joke_data['content']
     except Exception as e:
         await message.answer("Произошла ошибка при обработке анекдота.")
+        logging.error(f"Error parsing joke data: {e}")
         return
 
     await message.answer(anecdote)
