@@ -1,5 +1,5 @@
 # Виртуальное окружение
-myvenv/
+.venv/
 .venv/
 env/
 venv/
