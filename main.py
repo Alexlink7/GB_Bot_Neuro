@@ -1,9 +1,12 @@
 import logging
 import asyncio
 import requests
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 import config
+from random_fox import fox
+from random import randint
+from keyboards import kb1, kb2
 
 API_TOKEN = config.token
 WEATHER_API_KEY = config.weather_api_key  # Добавьте ключ API OpenWeatherMap в файл config.py
@@ -19,8 +22,19 @@ dp = Dispatcher()
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
     await message.answer(
-        "Привет! Я эхобот на aiogram 3. Отправь мне любое сообщение, и я повторю его. Используй команды /weather и /anecdote для получения погоды и анекдотов соответственно.")
+        "Привет! Я эхобот на aiogram 3. Отправь мне любое сообщение, и я повторю его. Либо используй кнопки", reply_markup=kb1)
 
+@dp.message(F.text.lower() == '/num')
+async def send_random(message: types.Message):
+    number = randint(1, 10)
+    await message.answer(f"{number}")
+@dp.message(Command("fox"))
+@dp.message(Command("лиса"))
+async def send_fox(message: types.Message):
+    image_fox = fox()
+    # await message.answer_photo(image_fox)
+    await bot.send_photo(message.chat.id, image_fox)
+    # await message.answer(f"{image_fox}")
 
 @dp.message(Command("weather"))
 async def get_weather(message: types.Message):
@@ -77,6 +91,20 @@ async def get_anecdote(message: types.Message):
         return
 
     await message.answer(anecdote)
+
+@dp.message(F.text)
+async def echo(message: types.Message):
+    if "ура" in message.text:
+        await message.answer("УРАААА!")
+    elif message.text == "инфо":
+
+        user_name = message.chat.id
+        print(user_name)
+        await message.answer(str(user_name))
+    else:
+        await message.answer(message.text)
+
+
 
 
 @dp.message()
